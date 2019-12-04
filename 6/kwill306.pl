@@ -9,28 +9,30 @@
 /* TOP/1: ARG1 is a sentence represented as a list of atoms
 (e.g. [is, it, true, that, mark, hamill, acts, in, star, wars, iv]).
 TOP/1 will succeed or fail. Either way, it should write out a sensible answer. */
-top(Sentence) :-
-  yesno(Query, Sentence, []),
-  showresults(Query), !.
 
 top(Sentence) :-
-  what(What, Sentence, []),
-  format("The title of the movie is ~w", [What]), !.
+  (yesno(Query, Sentence, []) ->
+    showresults(Query), !
+  ; write("Sorry, I do not understand."), !).
+
+top(Sentence) :-
+  (what(What, Sentence, []) ->
+    format("The title of the movie is ~w", [What]), !
+  ; write("Sorry, I do not understand."), !).
 
 top(Sentence) :-
   !, who(Who, Sentence, []),
   format("The person you're looking for is ~w", [Who]).
 
-top(_) :-
-  write("Sorry, I do not understand.").
+top(_) :- write("Sorry, I do not understand."), !.
 
 /* SHOWRESULTS/1 writes out positive text if ARG1 is a list of true predicates, negative text otherwise. */
 showresults(Query) :-
   test(Query),
-  write("Yes, that's true.").
+  write("Yes, that's true."), !.
 
 showresults(_) :-
-  write("Sorry, that's false.").
+  write("Sorry, that's false."), !.
 
 /* TEST/1 takes a list of predicates, and succeeds if all the predicates are true, otherwise fails. */
 test([Query]) :-
@@ -54,7 +56,7 @@ yesno(Sem) --> [did], statement(_^_^Sem, did).
 yesno(Sem) --> statement(_^_^Sem, no), [right].
 
 statement(S, Did) --> singlestatement(S, Did).
-statement(_^_^[acts_in(Subj, PrNoun)], Did) --> singlestatement(Subj^_^_, Did), [in], noun_phrase(PrNoun).
+statement(_^_^Sem, Did) --> singlestatement(Subj^_^Sem, Did), [in], noun_phrase(PrNoun), {acts_in(Subj, PrNoun)}.
 statement(_^_^Sem, Did) --> singlestatement(_^_^S1, Did), statement(_^_^S2, Did), {append(S1,S2,Sem)}.
 statement(_^_^Sem, Did) --> singlestatement(_^_^S1, Did), [and], statement(_^_^S2, Did), {append(S1,S2,Sem)}.
 
