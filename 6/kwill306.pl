@@ -11,14 +11,12 @@
 TOP/1 will succeed or fail. Either way, it should write out a sensible answer. */
 
 top(Sentence) :-
-  (yesno(Query, Sentence, []) ->
-    showresults(Query), !
-  ; write("Sorry, I do not understand."), !).
+  yesno(Query, Sentence, []),
+  showresults(Query), !.
 
 top(Sentence) :-
-  (what(What, Sentence, []) ->
-    format("The title of the movie is ~w", [What]), !
-  ; write("Sorry, I do not understand."), !).
+  what(What, Sentence, []),
+  format("The title of the movie is ~w", [What]), !.
 
 top(Sentence) :-
   !, who(Who, Sentence, []),
@@ -29,10 +27,10 @@ top(_) :- write("Sorry, I do not understand."), !.
 /* SHOWRESULTS/1 writes out positive text if ARG1 is a list of true predicates, negative text otherwise. */
 showresults(Query) :-
   test(Query),
-  write("Yes, that's true."), !.
+  write("Yes, that's true.").
 
 showresults(_) :-
-  write("Sorry, that's false."), !.
+  write("Sorry, that's false.").
 
 /* TEST/1 takes a list of predicates, and succeeds if all the predicates are true, otherwise fails. */
 test([Query]) :-
@@ -162,7 +160,7 @@ verb(X^Y^[directed(X,Y)], no) --> [directs].
 verb(X^actor^[actor(X)], no) --> [is].
 verb(X^director^[director(X)], no) --> [is].
 verb(X^character^[character(X)], no) --> [is].
-verb(X^title^[title_of(X)], no) --> [is].
+verb(X^title^[title(X)], no) --> [is].
 
 /*** DATABASE ***/
 
